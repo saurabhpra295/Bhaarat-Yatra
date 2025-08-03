@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tour Packages Results</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 30px;
+    max-width: 900px;
+    margin: auto;
+  }
+  h1 {
+    margin-bottom: 20px;
+  }
+  .package {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+  .package h2 {
+    margin: 0 0 10px 0;
+  }
+  .price {
+    font-weight: bold;
+    color: green;
+  }
+  .back-btn {
+    margin-top: 30px;
+    background-color: #ccc;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <h1>Tour Packages Results</h1>
+  <div id="results"></div>
+  <button class="back-btn" onclick="window.history.back()">← Back to Search</button>
+
+<script>
+  // Sample tour packages data with base prices (per day) by tier
+  const tourPackages = {
+    nainital: {
+      name: 'Nainital Tour',
+      basePrices: { budget: 2000, premium: 3500, luxury: 6000 },
+      description: "Beautiful lake city with mountains."
+    },
+    manali: {
+      name: 'Manali Adventure',
+      basePrices: { budget: 2500, premium: 4000, luxury: 7000 },
+      description: "Mountain adventures & scenic beauty."
+    },
+    goa: {
+      name: 'Goa Beach Relaxation',
+      basePrices: { budget: 1800, premium: 3000, luxury: 5500 },
+      description: "Sun, sand and nightlife."
+    },
+    jaipur: {
+      name: 'Jaipur Heritage Tour',
+      basePrices: { budget: 2200, premium: 3600, luxury: 6500 },
+      description: "Rich culture and palaces."
+    }
+  };
+
+  function calculateDuration(start, end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // inclusive of both days
+    return diffDays;
+  }
+
+  function renderResults() {
+    const search = JSON.parse(localStorage.getItem('tourSearch'));
+    if (!search) {
+      document.getElementById('results').innerHTML = "<p>No search data found. Please go back and search.</p>";
+      return;
+    }
+
+    const { destination, startDate, endDate, tier } = search;
+    const duration = calculateDuration(startDate, endDate);
+
+    const packageData = tourPackages[destination];
+    if (!packageData) {
+      document.getElementById('results').innerHTML = "<p>No packages found for selected destination.</p>";
+      return;
+    }
+
+    // Calculate price based on tier & duration
+    const pricePerDay = packageData.basePrices[tier];
+    const totalPrice = pricePerDay * duration;
+
+    const html = `
+      <div class="package">
+        <h2>${packageData.name}</h2>
+        <p>${packageData.description}</p>
+        <p><strong>Duration:</strong> ${duration} day(s)</p>
+        <p class="price">Price (${tier.charAt(0).toUpperCase() + tier.slice(1)} tier): ₹${totalPrice.toLocaleString()}</p>
+      </div>
+    `;
+
+    document.getElementById('results').innerHTML = html;
+  }
+
+  renderResults();
+</script>
+</body>
+</html>
